@@ -8,7 +8,7 @@ ENABLE_STRING_UPLOAD_PUBLISHER=true      # Set to false to disable string upload
 ENABLE_FILE_UPLOAD_PUBLISHER=true        # Set to false to disable file upload
 ENABLE_BLOB_CHECK_AGGREGATOR=true        # Set to false to disable file upload
 
-SLEEP_DELAY=2                            # Sleep between failed requests
+SLEEP_DELAY=1                            # Sleep between failed requests
 MAX_RETRIES=100                          # Max retries for checking aggregator & publisher
 
 CACHE_CHECK=true                         # Set to false to disable cache checking on aggregator
@@ -113,6 +113,10 @@ upload_string_blob() {
     RANDOM_STRING=$(tr -dc A-Za-z0-9 </dev/urandom | head -c ${STRING_LEN})
     echo -e "${GREEN}Generated random string: ${NC}${RANDOM_STRING}${NC}"
     echo -e "${GREEN}Uploading string: ${NC}${RANDOM_STRING}${NC}"
+    
+    # Capture start time
+    START_TIME=$(date +%s)
+
     RETRIES=0
     while true; do
         PUBLISH_RESULT=$(curl -s -X PUT "$PUBLISHER/v1/blobs" -d "$RANDOM_STRING")
@@ -130,6 +134,13 @@ upload_string_blob() {
         sleep $SLEEP_DELAY
     done
 
+    # Capture end time
+    END_TIME=$(date +%s)
+    
+    # Calculate and print duration
+    DURATION=$((END_TIME - START_TIME))
+    echo -e "${GREEN}String upload successful. Duration: ${NC}$DURATION seconds${NC}"
+
     extract_blob_id "$PUBLISH_RESULT"
 }
 
@@ -142,6 +153,9 @@ generate_random_file() {
 upload_file_blob() {
     echo -e "${GREEN}Uploading file: ${NC}${FILE_PATH}${NC}"
 
+    # Capture start time
+    START_TIME=$(date +%s)
+    
     RETRIES=0
     while true; do
         PUBLISH_RESULT=$(curl -s -X PUT "$PUBLISHER/v1/blobs?epochs=5" --upload-file "$FILE_PATH")
@@ -158,6 +172,10 @@ upload_file_blob() {
         fi
         sleep $SLEEP_DELAY
     done
+    
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    echo -e "${GREEN}File upload successful. Duration: ${NC}$DURATION seconds${NC}"
 
     extract_blob_id "$PUBLISH_RESULT"
 }
@@ -188,7 +206,7 @@ extract_blob_id() {
     fi
 
     if echo "$PUBLISH_RESULT" | jq -e '.newlyCreated' >/dev/null; then
-        echo -e "${GREEN}Upload successful! Blob ID: ${NC}${BLOB_ID}${NC}"
+        echo -e "${GREEN}Blob ID: ${NC}${BLOB_ID}${NC}"
     elif echo "$PUBLISH_RESULT" | jq -e '.alreadyCertified' >/dev/null; then
         echo -e "${YELLOW}Blob already exists on Publisher. Blob ID: ${NC}${BLOB_ID}${NC}"
     else
