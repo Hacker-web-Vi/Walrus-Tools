@@ -97,14 +97,17 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo -e "${BLUE}------------------------------SETTINGS-----------------------------${NC}"
-echo -e "${BLUE}AGGREGATOR:${NC}     $AGGREGATOR"
-echo -e "${BLUE}PUBLISHER:${NC}      $PUBLISHER"
-echo -e "${BLUE}SLEEP_DELAY:${NC}    $SLEEP_DELAY seconds"
-echo -e "${BLUE}MAX_RETRIES:${NC}    $MAX_RETRIES"
-echo -e "${BLUE}CACHE_CHECK:${NC}    $CACHE_CHECK"
-echo -e "${BLUE}FILE_PATH:${NC}      $FILE_PATH"
-echo -e "${BLUE}FILE_SIZE_MB:${NC}   $FILE_SIZE_MB"
-echo -e "${BLUE}STRING_LEN:${NC}     $STRING_LEN characters"
+echo -e "${BLUE}AGGREGATOR:${NC}         $AGGREGATOR"
+echo -e "${BLUE}PUBLISHER:${NC}          $PUBLISHER"
+echo -e "${BLUE}STRING_UPLOAD:${NC}      $ENABLE_STRING_UPLOAD_PUBLISHER"
+echo -e "${BLUE}FILE_UPLOAD:${NC}        $ENABLE_FILE_UPLOAD_PUBLISHER"
+echo -e "${BLUE}BLOB_CHECK:${NC}         $ENABLE_BLOB_CHECK_AGGREGATOR"
+echo -e "${BLUE}SLEEP_DELAY:${NC}        $SLEEP_DELAY seconds"
+echo -e "${BLUE}MAX_RETRIES:${NC}        $MAX_RETRIES"
+echo -e "${BLUE}CACHE_CHECK:${NC}        $CACHE_CHECK"
+echo -e "${BLUE}FILE_PATH:${NC}          $FILE_PATH"
+echo -e "${BLUE}FILE_SIZE_MB:${NC}       $FILE_SIZE_MB"
+echo -e "${BLUE}STRING_LEN:${NC}         $STRING_LEN characters"
 
 upload_string_blob() {
     RANDOM_STRING=$(tr -dc A-Za-z0-9 </dev/urandom | head -c ${STRING_LEN})
