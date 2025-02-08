@@ -145,7 +145,7 @@ upload_string_blob() {
 }
 
 generate_random_file() {
-    echo -e "${GREEN}Generating a random file of ${NC}${FILE_SIZE_MB}MB...${NC}"
+    echo -e "${GREEN}Generating a random file of ${NC}${FILE_SIZE_MB}MB${NC}"
     dd if=/dev/urandom of="$FILE_PATH" bs=1M count=$FILE_SIZE_MB status=none
     echo -e "${GREEN}Random file generated: ${NC}${FILE_PATH}${NC}"
 }
@@ -159,7 +159,7 @@ upload_file_blob() {
     RETRIES=0
     while true; do
         PUBLISH_RESULT=$(curl -s -X PUT "$PUBLISHER/v1/blobs?epochs=5" --upload-file "$FILE_PATH")
-
+        
         if [[ $? -eq 0 && -n "$PUBLISH_RESULT" ]]; then
             break
         fi
@@ -224,9 +224,13 @@ check_aggregator() {
     echo -e "${GREEN}Checking Blob by ID on Aggregator: ${NC}$BLOB_ID${GREEN}${NC}"
 
     RETRIES=0
+    
+    # To give publisher enough time to store the blob to avoid getting 404 and hitting cache 
+    sleep 5s
+    
     while true; do
         AGGREGATOR_QUERY_RESULT=$(curl -s "$AGGREGATOR/v1/blobs/$BLOB_ID" | tr -d '\0')
-
+        #curl -I "$AGGREGATOR/v1/blobs/$BLOB_ID"
         if [[ $? -ne 0 ]]; then
             # Calculate the retry count and total max retries
             RETRY_COUNT=$((RETRIES + 1))
